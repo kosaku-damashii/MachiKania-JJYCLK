@@ -1,6 +1,6 @@
 REM JJYCLK
 
-USEVAR MIN,HOUR,DAYS,DOW,YEAR,MON,DAY
+USEVAR MIN,HOUR,DAYS,DOW,YEAR,MON,DAY,PA1,PA2,RSLT
 
 USETIMER 1000
 INTERRUPT TIMER, ISRTMR
@@ -34,13 +34,28 @@ WHILE 1
      N=0
     ELSE
      IF N==8 THEN
-      PRINT "BEGIN"
+      REM PRINT "BEGIN"
+      PA2=    (G>>7 AND 1)
+      PA2=PA2+(G>>6 AND 1)
+      PA2=PA2+(G>>5 AND 1)
+      PA2=PA2+(G>>3 AND 1)
+      PA2=PA2+(G>>2 AND 1)
+      PA2=PA2+(G>>1 AND 1)
+      PA2=PA2+(G    AND 1)
+      PA2=PA2 AND 1
       MIN=((G>>5) AND 0x07)*10+(G AND 0x0F)
       T=1
      ELSEIF N==9 THEN
       IF     T==1 THEN
+       PA1=    (G>>6 AND 1)
+       PA1=PA1+(G>>5 AND 1)
+       PA1=PA1+(G>>3 AND 1)
+       PA1=PA1+(G>>2 AND 1)
+       PA1=PA1+(G>>1 AND 1)
+       PA1=PA1+(G    AND 1)
+       PA1=PA1 AND 1
        HOUR=((G>>5) AND 0x03)*10+(G AND 0x0F)
-       PRINT HOUR;":";DEC$(MIN)
+       REM PRINT HOUR;":";MIN
        T=T+1
       ELSEIF T==2 THEN
        DAYS=((G>>5) AND 0x03)*100+(G AND 0x0F)*10
@@ -48,16 +63,26 @@ WHILE 1
       ELSEIF T==3 THEN
        DAYS= DAYS+((G>>5) AND 0x0F)
        GOSUB(MONDAY, DAYS)
-       PRINT "Days:";DAYS
-       PRINT MON;"/";DAY
+       REM PRINT "Days:";DAYS
+       IF (PA1==(G>>2 AND 1)) AND (PA2==(G>>1 AND 1)) THEN 
+        RSLT=1
+       ELSE
+        RSLT=0
+       ENDIF
        T=T+1
       ELSEIF T==4 THEN
        YEAR=2000+((G>>4) AND 0x0F)*10+(G AND 0x0F)
-       PRINT YEAR
+       REM PRINT YEAR;"/";MON;"/";DAY;
        T=T+1
       ELSEIF T==5 THEN
        DOW$=GOSUB$(DAYWEEK,(G>>6) AND 0x07)
-       PRINT DOW$
+       IF RSLT==1 THEN
+        PRINT YEAR;"/";MON;"/";DAY;"(";DOW$;")"
+        PRINT HOUR;":";MIN
+       ELSE
+        PRINT "Wrong"
+       ENDIF
+       PRINT ""
        T=0
       ENDIF
      ENDIF

@@ -1,3 +1,4 @@
+
 REM JJYCLK
 
 USEVAR MIN,HOUR,DAYS,DOW,YEAR,MON,DAY,PA1,PA2,RSLT
@@ -34,7 +35,7 @@ WHILE 1
      N=0
     ELSE
      IF N==8 THEN
-      REM PRINT "BEGIN"
+      PRINT "BEGIN"
       PA2=GOSUB(PARITY,G,7,4)
       MIN=((G>>5) AND 0x07)*10+(G AND 0x0F)
       T=1
@@ -42,7 +43,7 @@ WHILE 1
       IF     T==1 THEN
        PA1=GOSUB(PARITY,G,6,4)
        HOUR=((G>>5) AND 0x03)*10+(G AND 0x0F)
-       REM PRINT HOUR;":";MIN
+       PRINT HOUR;":";MIN
        T=T+1
       ELSEIF T==2 THEN
        DAYS=((G>>5) AND 0x03)*100+(G AND 0x0F)*10
@@ -59,20 +60,24 @@ WHILE 1
        T=T+1
       ELSEIF T==4 THEN
        YEAR=2000+((G>>4) AND 0x0F)*10+(G AND 0x0F)
-       REM PRINT YEAR;"/";MON;"/";DAY;
+       PRINT YEAR;"/";MON;"/";DAY
        T=T+1
       ELSEIF T==5 THEN
        DOW$=GOSUB$(DAYWEEK,(G>>6) AND 0x07)
        IF RSLT==1 THEN
-        PRINT YEAR;"/";GOSUB$(PADDING,MON);"/";GOSUB$(PADDING,DAY);"(";DOW$;")"
-        PRINT GOSUB$(PADDING,HOUR);":";GOSUB$(PADDING,MIN)
+        PRINT ""
         PRINT "SETTIME:"
-        REM PRINT DEC$(YEAR)+"-"+GOSUB$(PADDING,MON)+"-"+GOSUB$(PADDING,DAY)+"T"+GOSUB$(PADDING,HOUR)+":"+GOSUB$(PADDING,MIN)+":00"
+        P$=DEC$(YEAR)+"-"+GOSUB$(PADDING,MON)+"-"+GOSUB$(PADDING,DAY)
+        P$=P$+"T"+GOSUB$(PADDING,HOUR)+":"+GOSUB$(PADDING,MIN)+":00"
+        PRINT P$
+        SETTIME P$
+        PRINT ""
         PRINT "GETTIME:"
         PRINT GETTIME$()
         END
        ELSE
         PRINT "Wrong"
+        END
        ENDIF
        PRINT ""
        T=0
@@ -143,7 +148,6 @@ LABEL PARITY
 RETURN R
 
 LABEL PADDING
- VAR D,R
  D=ARGS(1)
  R$=DEC$(D)
  IF D<10 THEN R$="0"+R$

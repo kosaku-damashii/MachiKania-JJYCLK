@@ -35,25 +35,12 @@ WHILE 1
     ELSE
      IF N==8 THEN
       REM PRINT "BEGIN"
-      PA2=    (G>>7 AND 1)
-      PA2=PA2+(G>>6 AND 1)
-      PA2=PA2+(G>>5 AND 1)
-      PA2=PA2+(G>>3 AND 1)
-      PA2=PA2+(G>>2 AND 1)
-      PA2=PA2+(G>>1 AND 1)
-      PA2=PA2+(G    AND 1)
-      PA2=PA2 AND 1
+      PA2=GOSUB(PARITY,G,7,4)
       MIN=((G>>5) AND 0x07)*10+(G AND 0x0F)
       T=1
      ELSEIF N==9 THEN
       IF     T==1 THEN
-       PA1=    (G>>6 AND 1)
-       PA1=PA1+(G>>5 AND 1)
-       PA1=PA1+(G>>3 AND 1)
-       PA1=PA1+(G>>2 AND 1)
-       PA1=PA1+(G>>1 AND 1)
-       PA1=PA1+(G    AND 1)
-       PA1=PA1 AND 1
+       PA1=GOSUB(PARITY,G,6,4)
        HOUR=((G>>5) AND 0x03)*10+(G AND 0x0F)
        REM PRINT HOUR;":";MIN
        T=T+1
@@ -77,8 +64,13 @@ WHILE 1
       ELSEIF T==5 THEN
        DOW$=GOSUB$(DAYWEEK,(G>>6) AND 0x07)
        IF RSLT==1 THEN
-        PRINT YEAR;"/";MON;"/";DAY;"(";DOW$;")"
-        PRINT HOUR;":";MIN
+        PRINT YEAR;"/";GOSUB$(PADDING,MON);"/";GOSUB$(PADDING,DAY);"(";DOW$;")"
+        PRINT GOSUB$(PADDING,HOUR);":";GOSUB$(PADDING,MIN)
+        PRINT "SETTIME:"
+        REM PRINT DEC$(YEAR)+"-"+GOSUB$(PADDING,MON)+"-"+GOSUB$(PADDING,DAY)+"T"+GOSUB$(PADDING,HOUR)+":"+GOSUB$(PADDING,MIN)+":00"
+        PRINT "GETTIME:"
+        PRINT GETTIME$()
+        END
        ELSE
         PRINT "Wrong"
        ENDIF
@@ -137,6 +129,25 @@ LABEL DAYWEEK
   DOW$="Sat"
  ENDIF
 RETURN DOW$
+
+LABEL PARITY
+ VAR I,G,T,S,R
+ G=ARGS(1)
+ T=ARGS(2)
+ S=ARGS(3)
+ R=0
+ FOR I=T TO 0 STEP -1
+  IF I!=S THEN R=R+(G>>I AND 1)
+ NEXT
+ R=R AND 1
+RETURN R
+
+LABEL PADDING
+ VAR D,R
+ D=ARGS(1)
+ R$=DEC$(D)
+ IF D<10 THEN R$="0"+R$
+RETURN R$
 
 LABEL DAYSSUM
 CDATA 31,28,31,30,31,30,31,31,30,31,30,31

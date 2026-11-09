@@ -1,7 +1,6 @@
-
 REM JJYCLK
 
-USEVAR MIN,HOUR,DAYS,DOW,YEAR,MON,DAY,PA1,PA2,RSLT
+USEVAR MIN,HOUR,DAYS,DOW,YEAR,MON,DAY,PA1,PA2,RSLT,WD
 
 USETIMER 1000
 INTERRUPT TIMER, ISRTMR
@@ -43,7 +42,7 @@ WHILE 1
       IF     T==1 THEN
        PA1=GOSUB(PARITY,G,6,4)
        HOUR=((G>>5) AND 0x03)*10+(G AND 0x0F)
-       PRINT HOUR;":";MIN
+       PRINT GOSUB$(PADDING,HOUR)+":"+GOSUB$(PADDING,MIN)
        T=T+1
       ELSEIF T==2 THEN
        DAYS=((G>>5) AND 0x03)*100+(G AND 0x0F)*10
@@ -60,10 +59,11 @@ WHILE 1
       ELSEIF T==4 THEN
        YEAR=2000+((G>>4) AND 0x0F)*10+(G AND 0x0F)
        GOSUB(MONDAY, DAYS)
-       PRINT YEAR;"/";MON;"/";DAY
+       PRINT DEC$(YEAR)+"/"+GOSUB$(PADDING,MON)+"/"+GOSUB$(PADDING,DAY)
        T=T+1
       ELSEIF T==5 THEN
        DOW$=GOSUB$(DAYWEEK,(G>>6) AND 0x07)
+       PRINT "("+DOW$+")"
        IF RSLT==1 THEN
         PRINT ""
         PRINT "SETTIME:"
@@ -77,10 +77,9 @@ WHILE 1
         END
        ELSE
         PRINT "Wrong"
-        END
+        T=0
+        F=1
        ENDIF
-       PRINT ""
-       T=0
       ENDIF      
      ENDIF
     ENDIF

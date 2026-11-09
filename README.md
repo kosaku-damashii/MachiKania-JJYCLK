@@ -8,12 +8,13 @@ MICHIKANIAP.INI の 「RTCFILE」を有効にすることによって、SDカー
 ## 電波時計モジュールについて
 以前、aitendoで売られていた電波時計モジュールを使用して動作確認しているが、他の電波時計モジュールでも出力波形は同様（正論理、府論理の違いはある可能性がある）と思われる。<BR>
 <img width="458" height="562" alt="image" src="https://github.com/user-attachments/assets/adf058d9-d529-4d67-8bd9-8e45d024de1f" />
-
 <BR>
-結線は以下の通り。<BR>
-V：+3V<BR>
+
+## 接続
+電波時計モジュールの配線は以下の通り。<BR>
+V：+3V (電波時計モジュールの電源電圧の許容範囲内で供給)　<BR>
 G：GND<BR>
-T：受信信号出力（負論理）<BR>
+T：受信信号出力（負論理） MachiKania type P/PUのGP0へ<BR>
 無印：受信信号出力（正論理）<BR>
 P：出力制御（プルダウンでON。10kΩを介してGNDへ）<BR>
 H：不明（接続なし）<BR>
